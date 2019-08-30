@@ -16,6 +16,7 @@ func main() {
 		ReadBufferSize:  1024,
 		WriteBufferSize: 1024,
 	}
+	connections := make([]*websocket.Conn, 0)
 
 	http.HandleFunc("/get-messages", func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != http.MethodGet {
@@ -41,6 +42,12 @@ func main() {
 
 		messages = append(messages, message)
 
+		for _, conn := range connections {
+			if err := conn.WriteMessage(websocket.TextMessage, []byte(message)); err != nil {
+				log.Println(err)
+			}
+		}
+
 		w.WriteHeader(http.StatusCreated)
 	})
 
@@ -50,10 +57,7 @@ func main() {
 			log.Println(err)
 			return
 		}
-		if err := conn.WriteMessage(websocket.TextMessage, []byte("Hello, WebSocket")); err != nil {
-			log.Println(err)
-			return
-		}
+		connections = append(connections, conn)
 	})
 
 	http.Handle("/", http.FileServer(http.Dir("web")))

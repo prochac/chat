@@ -12,7 +12,11 @@
 <script>
     let socket = new WebSocket("ws://" + window.location.host + "/ws");
     socket.onopen = e => console.log("[open] Connection established");
-    socket.onmessage = e => console.log(`[message] Data received from server: ${e.data}`);
+    socket.onmessage = e => {
+        const row = document.createElement("LI");
+        row.appendChild(document.createTextNode(e.data));
+        messages.appendChild(row);
+    };
     socket.onclose = event => event.wasClean
             ? console.log(`[close] Connection closed cleanly, code=${event.code} reason=${event.reason}`)
             : console.log('[close] Connection died');
@@ -25,10 +29,6 @@
 
     form.addEventListener("submit", ev => {
         ev.preventDefault();
-
-        const row = document.createElement("LI");
-        row.appendChild(document.createTextNode(message.value));
-        messages.appendChild(row);
 
         const json = JSON.stringify(message.value);
         message.value = '';

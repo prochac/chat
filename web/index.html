@@ -10,6 +10,15 @@
     <button>Send</button>
 </form>
 <script>
+    let socket = new WebSocket("ws://" + window.location.host + "/ws");
+    socket.onopen = e => console.log("[open] Connection established");
+    socket.onmessage = e => console.log(`[message] Data received from server: ${e.data}`);
+    socket.onclose = event => event.wasClean
+            ? console.log(`[close] Connection closed cleanly, code=${event.code} reason=${event.reason}`)
+            : console.log('[close] Connection died');
+    socket.onerror = err => console.log(`[error] ${err.message}`);
+
+
     let messages = document.getElementById("messages");
     const message = document.getElementById("message");
     const form = document.getElementById("form");

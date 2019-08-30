@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 
 	"github.com/gorilla/websocket"
 )
@@ -61,5 +62,10 @@ func main() {
 	})
 
 	http.Handle("/", http.FileServer(http.Dir("web")))
-	log.Fatal(http.ListenAndServe(":8080", nil))
+
+	port := "8080"
+	if p, ok := os.LookupEnv("PORT"); ok {
+		port = p
+	}
+	log.Fatal(http.ListenAndServe(":"+port, nil))
 }

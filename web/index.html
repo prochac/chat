@@ -10,7 +10,7 @@
     <button>Send</button>
 </form>
 <script>
-    let socket = new WebSocket("ws://" + window.location.host + "/ws");
+    let socket = new WebSocket((location.protocol === 'https:' ? "wss://" : "ws://") + window.location.host + "/ws");
     socket.onopen = e => console.log("[open] Connection established");
     socket.onmessage = e => {
         const row = document.createElement("LI");
@@ -18,8 +18,8 @@
         messages.appendChild(row);
     };
     socket.onclose = event => event.wasClean
-            ? console.log(`[close] Connection closed cleanly, code=${event.code} reason=${event.reason}`)
-            : console.log('[close] Connection died');
+        ? console.log(`[close] Connection closed cleanly, code=${event.code} reason=${event.reason}`)
+        : console.log('[close] Connection died');
     socket.onerror = err => console.log(`[error] ${err.message}`);
 
 

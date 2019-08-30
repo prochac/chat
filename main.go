@@ -2,7 +2,6 @@ package main
 
 import (
 	"encoding/json"
-	"html/template"
 	"log"
 	"net/http"
 )
@@ -37,27 +36,6 @@ func main() {
 		http.Redirect(w, r, "/", http.StatusFound)
 	})
 
-	http.Handle("/", func() http.HandlerFunc {
-		t, err := template.ParseFiles("web/index.html")
-		if err != nil {
-			panic(err)
-		}
-		return func(w http.ResponseWriter, r *http.Request) {
-			data := struct {
-				Messages []string
-			}{
-				Messages: messages,
-			}
-
-			t.Execute(w, data)
-		}
-	}())
-
-	http.Handle("/static/",
-		http.StripPrefix("/static/",
-			http.FileServer(http.Dir("web/static")),
-		),
-	)
-
+	http.Handle("/", http.FileServer(http.Dir("web")))
 	log.Fatal(http.ListenAndServe(":8080", nil))
 }

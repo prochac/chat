@@ -1,21 +1,17 @@
 <html>
 <head>
     <title>Chat</title>
-    <link rel="stylesheet" href="static/style.css">
+    <link rel="stylesheet" href="style.css">
 </head>
-<body>
-<ul id="messages">
-    {{ range .Messages }}
-        <li>{{ . }}</li>
-    {{ end }}
-</ul>
+<body id="app">
+<ul id="messages"></ul>
 <form id="form" action="/post-message" method="post">
     <input id="message" name="message" autocomplete="off" autofocus/>
     <button>Send</button>
 </form>
 <script>
-    setInterval(() => {
-        fetch("/get-messages")
+    function reloadMessages() {
+        return fetch("/get-messages")
             .then((response) => {
                 return response.json()
             })
@@ -31,8 +27,13 @@
 
                 const messages = document.getElementById("messages");
                 messages.parentNode.replaceChild(newMessages, messages);
-            })
-    }, 5000);
+            });
+    }
+
+    document.getElementById("app").onload = () => {
+        reloadMessages();
+        setInterval(reloadMessages, 5000);
+    };
 </script>
 </body>
 </html>

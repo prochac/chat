@@ -2,12 +2,13 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
 )
 
 func main() {
-	var messages []string
+	messages := make([]string, 0)
 
 	http.HandleFunc("/get-messages", func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != http.MethodGet {
@@ -24,16 +25,16 @@ func main() {
 			return
 		}
 
-		r.ParseForm()
-		if len(r.Form["message"]) < 1 {
-			w.WriteHeader(http.StatusBadRequest)
-			w.Write([]byte("no message"))
+		var message string
+		if err := json.NewDecoder(r.Body).Decode(&message); err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			fmt.Fprint(w, err)
 			return
 		}
 
-		messages = append(messages, r.Form["message"][0])
+		messages = append(messages, message)
 
-		http.Redirect(w, r, "/", http.StatusFound)
+		w.WriteHeader(http.StatusCreated)
 	})
 
 	http.Handle("/", http.FileServer(http.Dir("web")))

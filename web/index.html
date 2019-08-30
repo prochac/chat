@@ -1,7 +1,6 @@
 <html>
 <head>
     <title>Chat</title>
-    <meta http-equiv="refresh" content="5">
     <link rel="stylesheet" href="static/style.css">
 </head>
 <body>
@@ -14,5 +13,26 @@
     <input id="message" name="message" autocomplete="off" autofocus/>
     <button>Send</button>
 </form>
+<script>
+    setInterval(() => {
+        fetch("/get-messages")
+            .then((response) => {
+                return response.json()
+            })
+            .then((json) => {
+                const newMessages = document.createElement("UL");
+                newMessages.setAttribute("id", "messages");
+
+                json.forEach((message) => {
+                    const row = document.createElement("LI");
+                    row.appendChild(document.createTextNode(message));
+                    return newMessages.appendChild(row);
+                });
+
+                const messages = document.getElementById("messages");
+                messages.parentNode.replaceChild(newMessages, messages);
+            })
+    }, 5000);
+</script>
 </body>
 </html>

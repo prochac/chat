@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"html/template"
 	"log"
 	"net/http"
@@ -8,6 +9,15 @@ import (
 
 func main() {
 	var messages []string
+
+	http.HandleFunc("/get-messages", func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodGet {
+			w.WriteHeader(http.StatusMethodNotAllowed)
+			return
+		}
+
+		json.NewEncoder(w).Encode(messages)
+	})
 
 	http.HandleFunc("/post-message", func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != http.MethodPost {

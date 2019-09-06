@@ -67,5 +67,7 @@ func main() {
 	if p, ok := os.LookupEnv("PORT"); ok {
 		port = p
 	}
+
+	fmt.Println("http://0.0.0.0:8080")
 	log.Fatal(http.ListenAndServe(":"+port, nil))
 }

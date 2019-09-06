@@ -1,68 +1,30 @@
-<html>
+<!doctype html>
+<html lang="cs">
 <head>
+    <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chat</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+          integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
 </head>
 <body id="app">
-<ul id="messages"></ul>
-<form id="form" action="" method="post">
-    <input id="message" name="message" autocomplete="off" autofocus/>
-    <button>Send</button>
-</form>
-<script>
-    let socket = new WebSocket((location.protocol === 'https:' ? "wss://" : "ws://") + window.location.host + "/ws");
-    socket.onopen = e => console.log("[open] Connection established");
-    socket.onmessage = e => {
-        const row = document.createElement("LI");
-        row.appendChild(document.createTextNode(e.data));
-        messages.appendChild(row);
-    };
-    socket.onclose = event => event.wasClean
-        ? console.log(`[close] Connection closed cleanly, code=${event.code} reason=${event.reason}`)
-        : console.log('[close] Connection died');
-    socket.onerror = err => console.log(`[error] ${err.message}`);
-
-
-    let messages = document.getElementById("messages");
-    const message = document.getElementById("message");
-    const form = document.getElementById("form");
-
-    form.addEventListener("submit", ev => {
-        ev.preventDefault();
-
-        const json = JSON.stringify(message.value);
-        message.value = '';
-
-        return fetch("/post-message", {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: json,
-        });
-    });
-
-    reloadMessages = () => fetch("/get-messages")
-        .then(response => response.json())
-        .then(json => {
-            const newMessages = document.createElement("UL");
-            newMessages.setAttribute("id", "messages");
-
-            json.forEach(message => {
-                const row = document.createElement("LI");
-                row.appendChild(document.createTextNode(message));
-                return newMessages.appendChild(row);
-            });
-
-            messages.parentNode.replaceChild(newMessages, messages);
-            messages = document.getElementById("messages");
-        });
-
-    document.getElementById("app").onload = () => {
-        reloadMessages();
-        setInterval(reloadMessages, 5000);
-    };
-</script>
+    <div class="d-flex flex-column vw-100 vh-100">
+        <div class="d-flex p-2 flex-column flex-grow-1 overflow-auto">
+            <ul id="messages" class="list-group"></ul>
+        </div>
+        <div class="d-flex p-2 flex-grow-0"> 
+            <form class="w-100" id="form" action="" method="post">
+                <div class="d-flex flex-row">
+                    <div class="d-flex p-2 flex-grow-1 w-100 form-group">
+                        <input class="form-control" id="message" name="message" autocomplete="off" autofocus/>
+                    </div>
+                    <div class="d-flex p-2 flex-grow-0 h-100">
+                        <button class="btn btn-primary">Send</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+<script type="text/javascript" src="script.js"></script>
 </body>
 </html>
